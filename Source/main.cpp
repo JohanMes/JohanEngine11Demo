@@ -14,32 +14,29 @@ void DeleteEngine() {
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+	static bool IsResizing = false;
 	switch(Message) {
-//		case WM_ENTERSIZEMOVE: {
-//			renderer->OnEnterSizeMove();
-//			break;
-//		}
-//		case WM_EXITSIZEMOVE: {
-//			renderer->OnExitSizeMove();
-//			break;
-//		}
-		case WM_SIZE: {
+		case WM_ENTERSIZEMOVE: {
+			IsResizing = true;
+			break;
+		}
+		case WM_EXITSIZEMOVE: {
+			IsResizing = false;
 			if(renderer) {
 				renderer->OnResize();
 			}
 			break;
 		}
-//		case WM_SIZE: {
-//			switch(wParam) {
-//				case SIZE_MAXIMIZED: {
-//					if(renderer) {
-//						renderer->OnExitSizeMove();
-//					}
-//					break;
-//				}
-//			}
-//			break;
-//		}
+		case WM_SIZE: {
+			if(renderer && !IsResizing) {
+				renderer->OnResize();
+			}
+			break;
+		}
+		case WM_MENUCHAR: {
+			// Don't beep when using Alt+Enter
+			return MAKELRESULT(0, MNC_CLOSE);
+		}
 		case WM_DESTROY: {
 			PostQuitMessage(0);
 			break;
